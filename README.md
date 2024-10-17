@@ -4,7 +4,7 @@ Disciplina: Tópicos Especiais em Software
 
 Data de entrega: 22/10/2024
 
-Integrantes:
+<span style="color: red;">Integrantes:
 - Bruno Trevizan Rizzatto
 - Gustavo Rossi Silva
-- Yuji Chikara Kiyota
+- Yuji Chikara Kiyota</span>
