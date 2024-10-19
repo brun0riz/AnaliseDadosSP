@@ -102,14 +102,28 @@ y_pred = model.predict(X_test)
 # Avaliar o modelo
 accuracy = accuracy_score(y_test, y_pred)  # é calculada comparando as previões com os valores reais de y_test
 conf_matrix = confusion_matrix(y_test, y_pred)  # mostra o número de acertos e erros do modelo
-class_report = classification_report(y_test, y_pred)  # Fonerce um relatório com as métricas de precisão, recall e f1-score
+class_report = classification_report(y_test, y_pred, target_names=['Sem AVC', 'Com AVC'], output_dict=True)  # Fonerce um relatório com as métricas de precisão, recall e f1-score
 
-print(f"Acurácia: {accuracy}")
-print("Matriz de Confusão:")
-print(conf_matrix)
-print("Relatório de Classificação:")
-print(class_report)
+print(f"Precisão: {accuracy:.2f}")  # aqui se mostra a precisão do modelo
+print("\nMatriz de Confusão:")  # aqui se mostra a quantidade de precisões corretas e incorretas feitas pelo modelo
+print(f"Sem AVC: {conf_matrix[0]}")
+print(f"Com AVC: {conf_matrix[1]}")
+
+print("\nRelatório de Classificação:")
+print(f"{'Classe':<15}{'Precisão':<10}{'Recall':<10}{'F1-Score':<10}{'Suporte':<10}")
+for rotulo, metrics, in class_report.items():
+    if rotulo == 'accuracy':
+        print(f"{rotulo:<15}{metrics:<10}")
+    else:
+        print(f"{rotulo:<15}{metrics['precision']:<10.2f}{metrics['recall']:<10.2f}{metrics['f1-score']:<10.2f}{metrics['support']:<10}")
 
 
-
-
+# Explicação das viraveis do relatório de classificação
+# Precisão: é a proporção de previsões corretas feitas pelo modelo
+# Recall: é a proporção de verdadeiros positivos que foram identificados corretamente
+# F1-Score: é a média harmônica entre precisão e recall
+# Suporte: é o número de ocorrências de cada classe
+# Acurácia: é a proporção de previsões corretas feitas pelo modelo
+# Macro avg: é a média aritmética das métricas de precisão, recall e f1-score
+# Weighted avg: é a média ponderada das métricas de precisão, recall e f1-score
+# Basicamente essas duas ultimas trazem um desempenho geral do modelo
