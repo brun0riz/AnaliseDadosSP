@@ -7,7 +7,7 @@ Data de entrega: 22/10/2024
 <div>
 
  
-**[Link GoogleColab](https://colab.research.google.com/drive/1bOau3o5lTeIOyGw6lHqFakY2rzikVVgt?usp=sharing)**
+**[GoogleColab](https://colab.research.google.com/drive/1bOau3o5lTeIOyGw6lHqFakY2rzikVVgt?usp=sharing)**
 
 </div>
 <div>
