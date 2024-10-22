@@ -1,21 +1,17 @@
-# Analise de dados de saúde publica
-# Integrantes do grupo: Bruno Trevizan, Gustavo Rossi, Yuji Kiyota
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-
+from imblearn.over_sampling import SMOTE
 
 # Ler o arquivo csv
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
 
-# Preencher os valores nulos de 'bmi' com a média
-df['bmi'].fillna(df['bmi'].mean(), inplace=True)
-
+# Preencher os valores nulos de 'bmi' com a média (correção da atribuição)
+df['bmi'] = df['bmi'].fillna(df['bmi'].mean())
 
 # Gráficos para fatores de risco para AVC
 def graficos_de_risco(dataframe):
@@ -58,7 +54,6 @@ def graficos_de_risco(dataframe):
     sns.pairplot(df, hue='stroke')
     plt.show()
 
-
 graficos_de_risco(df)
 
 # Transformar as variáveis categóricas em numéricas
@@ -69,50 +64,36 @@ for column in categorical_columns:
     df[column] = le.fit_transform(df[column])
     label_encoders[column] = le
 
-# Define features e a varivel alvo para o modelo
+# Define features e a variável alvo para o modelo
 X = df.drop(columns=['id', 'stroke'])
 y = df['stroke']
 
 # Dividir os dados em treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# Aplicar SMOTE para balancear a classe minoritária
+smote = SMOTE(random_state=42)
+X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
+
 # Padronizar os dados
 scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
+X_train_smote = scaler.fit_transform(X_train_smote)
 X_test = scaler.transform(X_test)
 
-# Encontrar os melhores hyperparametros e treinar o modelo
-model = LogisticRegression()
-model.fit(X_train, y_train)
+# Treinar o modelo de Regressão Logística
+model = LogisticRegression(class_weight='balanced', random_state=42, max_iter=1000)
+model.fit(X_train_smote, y_train_smote)
 
-# Fazer previsões
+# Fazer previsões no conjunto de teste
 y_pred = model.predict(X_test)
 
 # Avaliar o modelo
 accuracy = accuracy_score(y_test, y_pred)
 conf_matrix = confusion_matrix(y_test, y_pred)
-class_report = classification_report(y_test, y_pred, target_names=['Sem AVC', 'Com AVC'], output_dict=True)
-
+class_report = classification_report(y_test, y_pred, target_names=['Sem AVC', 'Com AVC'])
+cross_val_score = cross_val_score(model, X, y, cv=5, scoring='accuracy')
 print(f"Precisão: {accuracy:.2f}")
-print("\nMatriz de Confusão:")
-print(f"Sem AVC: {conf_matrix[0]}")
-print(f"Com AVC: {conf_matrix[1]}")
+print(f"\nMatriz de Confusão:\n{conf_matrix}")
+print(f"\nRelatório de Classificação:\n{class_report}")
+print(f"\nCross Validation Score: {cross_val_score.mean():.2f}")
 
-print("\nRelatório de Classificação:")
-print(f"{'Classe':<15}{'Precisão':<10}{'Recall':<10}{'F1-Score':<10}{'Suporte':<10}")
-for rotulo, metrics in class_report.items():
-    if rotulo == 'accuracy':
-        print(f"{rotulo:<15}{metrics:<10.2f}")
-    else:
-        print(f"{rotulo:<15}{metrics['precision']:<10.2f}{metrics['recall']:<10.2f}{metrics['f1-score']:<10.2f}{metrics['support']:<10}")
-
-# Explicação das variáveis do relatório de classificação
-# Precisão: é a proporção de previsões corretas feitas pelo modelo
-# Recall: é a proporção de verdadeiros positivos que foram identificados corretamente
-# F1-Score: é a média harmônica entre precisão e recall
-# Suporte: é o número de ocorrências de cada classe
-# Accuracy: é a proporção de previsões corretas feitas pelo modelo
-# Macro avg: é a média aritmética das métricas de precisão, recall e f1-score
-# Weighted avg: é a média ponderada das métricas de precisão, recall e f1-score
-# Basicamente essas duas últimas trazem um desempenho geral do modelo
-# Tentei usar o Smote para balancear os dados, mas os FP aumentaram, equanto o FN e TP ficaram iguais, então optei por não usar
