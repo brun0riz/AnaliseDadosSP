@@ -12,6 +12,14 @@ Data de entrega: 22/10/2024
 </div>
 <div>
 
+<div>
+
+ 
+**[Slide](https://gamma.app/docs/Analise-de-Dados-de-Saude-Publica-para-Previsao-de-AVC-jcuumwif7dgnc9h)**
+
+</div>
+<div>
+
 Integrantes:
 - Bruno Trevizan Rizzatto
 - Gustavo Rossi Silva
