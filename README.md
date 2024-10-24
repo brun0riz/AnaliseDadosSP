@@ -24,3 +24,5 @@ Integrantes:
 - Bruno Trevizan Rizzatto
 - Gustavo Rossi Silva
 - Yuji Chikara Kiyota
+- Luiz Fernando Simm
+  
